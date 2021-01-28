@@ -68,17 +68,19 @@ export default new Vuex.Store({
       })
     },
     login (context, payload) {
-      context.commit('setNotif', 'loading')
-      if (!payload.email) {
-        context.commit('setNotif', 'Please insert your email')
-      }
+      // context.commit('setNotif', 'loading')
+      // if (!payload.email) {
+      //   context.commit('setNotif', 'Please insert your email')
+      // }
       console.log(payload)
       return new Promise((resolve, reject) => {
         axios.post(`${process.env.VUE_APP_BASE_URL}/api/v1/users/login`, payload)
           .then((res) => {
+            context.commit('setUser', res.data.result)
             localStorage.setItem('token', res.data.result.token)
             // axios.defaults.headers.common.Authorization = `Bearer ${res.data.result.token}`
             resolve(res.data.result[0])
+            router.push('/home')
           })
           .catch((err) => {
             console.log(err.response.data.result)
@@ -105,9 +107,9 @@ export default new Vuex.Store({
       return new Promise((resolve, reject) => {
         axios.get(`${process.env.VUE_APP_BASE_URL}/api/v1/labels${payload || ''}`)
           .then((res) => {
-            // console.log(res)
+            console.log(res)
             context.commit('setLabels', res.data.result)
-            context.commit('setPaginations', res.data.paginations)
+            // context.commit('setPaginations', res.data.paginations)
             resolve(res.data.result)
           })
           .catch((err) => {
@@ -178,7 +180,7 @@ export default new Vuex.Store({
       })
     }
   },
-  modules: {
+  getters: {
     getTodos (state) {
       return state.todos
     },
@@ -195,5 +197,7 @@ export default new Vuex.Store({
     getPage (state) {
       return state.paginations
     }
+  },
+  modules: {
   }
 })
